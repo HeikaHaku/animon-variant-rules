@@ -1,0 +1,37 @@
+{
+  "id": "animon-variant-rules",
+  "title": "Animon Variant Rules",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11"
+  },
+  "esmodules": [
+    "animon-variant-rules.js"
+  ],
+  "styles": [
+    "css/sheet.css"
+  ],
+  "relationships": {
+    "requires": [
+      {
+        "id": "animon-damage-update",
+        "type": "module",
+        "compatibility": {}
+      }
+    ],
+    "systems": [
+      {
+        "id": "animon",
+        "type": "system",
+        "compatibility": {}
+      }
+    ]
+  },
+  "authors": [
+    {
+      "name": "HeikaHaku",
+      "flags": {}
+    }
+  ]
+}

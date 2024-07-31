@@ -1,0 +1,20 @@
+.advancement {
+  display: grid;
+  grid-auto-columns: auto;
+  width: 100%;
+  gap: 2em;
+}
+
+.advancement > * {
+  grid-row: 1;
+}
+
+.advancement > input {
+  width: 3em;
+  justify-self: end;
+  text-align: center;
+}
+
+.tab.advancement .stage-box-border {
+  width: fit-content;
+}
