@@ -1,7 +1,7 @@
 {
   "id": "animon-variant-rules",
   "title": "Animon Variant Rules",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": {
     "minimum": "11",
     "verified": "11"
@@ -13,13 +13,6 @@
     "css/sheet.css"
   ],
   "relationships": {
-    "requires": [
-      {
-        "id": "animon-damage-update",
-        "type": "module",
-        "compatibility": {}
-      }
-    ],
     "systems": [
       {
         "id": "animon",
@@ -36,5 +29,5 @@
   ],
   "url": "https://github.com/HeikaHaku/animon-variant-rules",
   "manifest": "https://github.com/HeikaHaku/animon-variant-rules/raw/master/module.json",
-  "download": "https://github.com/HeikaHaku/animon-variant-rules/archive/refs/tags/v1.0.0.zip"
+  "download": "https://github.com/HeikaHaku/animon-variant-rules/archive/refs/tags/v1.0.1.zip"
 }

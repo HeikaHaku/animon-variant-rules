@@ -19,10 +19,10 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
 async _prepareVariantData(type, data) {
   switch(type) {
     case 'child':
-      data.data.system.limits = { level: game.settings.get('animon-variant-rules', 'maxLevel') };
+      data.data.system.limits = { level: game.settings.get('animon-variant-rules', 'maxLevel') || Infinity };
       break;
     case 'animon':
-      data.data.system.limits = { advancement: game.settings.get('animon-variant-rules', 'maxBoosts')};
+      data.data.system.limits = { advancement: game.settings.get('animon-variant-rules', 'maxBoosts') || Infinity};
       const advancement = data.data.system.advancement;
       //Initialize values if unset.
       ['damage', 'maxHP', 'dodge', 'initiative'].map(key => {
