@@ -14,46 +14,46 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
     data = await this._prepareVariantData(this.actor.type, await data);
 
     return data;
-}
-
-async _prepareVariantData(type, data) {
-  switch(type) {
-    case 'child':
-      data.data.system.limits = { level: game.settings.get('animon-variant-rules', 'maxLevel') || Infinity };
-      break;
-    case 'animon':
-      data.data.system.limits = { advancement: game.settings.get('animon-variant-rules', 'maxBoosts') || Infinity};
-      const advancement = data.data.system.advancement;
-      //Initialize values if unset.
-      ['damage', 'maxHP', 'dodge', 'initiative'].map(key => {
-        if (advancement[key] === undefined) {
-          // const update = `system.advancement.${key}`;
-          // this.actor.update({ [update]: advancement[`${key}1`] + advancement[`${key}2`]});
-          data.actor.system.advancement[key] = advancement[`${key}1`] + advancement[`${key}2`];
-          data.data.system.advancement[key] = advancement[`${key}1`] + advancement[`${key}2`];
-        }
-      });
-
-      // data.data.system.advancement.damage = advancement.damage || advancement.damage1 + advancement.damage2;
-      // data.data.system.advancement.maxHP = advancement.maxHP || advancement.maxHP1 + advancement.maxHP2;
-      // data.data.system.advancement.dodge = advancement.dodge || advancement.dodge1 + advancement.dodge2;
-      // data.data.system.advancement.initiative = advancement.initiative || advancement.initiative1 + advancement.initiative2;
-      break;
-    case 'npc':
-      break;
   }
 
-  return data;
-}
+  async _prepareVariantData(type, data) {
+    switch (type) {
+      case 'child':
+        data.data.system.limits = { level: game.settings.get('animon-variant-rules', 'maxLevel') || Infinity };
+        break;
+      case 'animon':
+        data.data.system.limits = { advancement: game.settings.get('animon-variant-rules', 'maxBoosts') || Infinity };
+        const advancement = data.data.system.advancement;
+        //Initialize values if unset.
+        ['damage', 'maxHP', 'dodge', 'initiative'].map(key => {
+          if (advancement[key] === undefined) {
+            // const update = `system.advancement.${key}`;
+            // this.actor.update({ [update]: advancement[`${key}1`] + advancement[`${key}2`]});
+            data.actor.system.advancement[key] = advancement[`${key}1`] + advancement[`${key}2`];
+            data.data.system.advancement[key] = advancement[`${key}1`] + advancement[`${key}2`];
+          }
+        });
 
-activateListeners(html) {
-  super.activateListeners(html);
+        // data.data.system.advancement.damage = advancement.damage || advancement.damage1 + advancement.damage2;
+        // data.data.system.advancement.maxHP = advancement.maxHP || advancement.maxHP1 + advancement.maxHP2;
+        // data.data.system.advancement.dodge = advancement.dodge || advancement.dodge1 + advancement.dodge2;
+        // data.data.system.advancement.initiative = advancement.initiative || advancement.initiative1 + advancement.initiative2;
+        break;
+      case 'npc':
+        break;
+    }
 
-  if (this.actor.isOwner) {
-    // html.find('.advance-hit-points').change(this._onAdvanceHitPoints.bind(this));
-    html.find('.advance-initiative').change(this._onAdvanceInitiative.bind(this));
+    return data;
   }
-}
+
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    if (this.actor.isOwner) {
+      // html.find('.advance-hit-points').change(this._onAdvanceHitPoints.bind(this));
+      html.find('.advance-initiative').change(this._onAdvanceInitiative.bind(this));
+    }
+  }
 
 
   _onUpdateDamage(event) {
@@ -90,7 +90,8 @@ activateListeners(html) {
   _onAdvanceDamage(event) {
     event.preventDefault();
     let damage = 0;
-    let advancement = (this.actor.system.advancement.damage || 0) * 2;
+    let element = event.target;
+    let advancement = (parseFloat(element.value) ?? (this.actor.system.advancement.damage || 0)) * 2;
 
     damage = this.actor.system.fledgling.stats.power + advancement;
     this.actor.update({ "system.fledgling.damage": damage });
@@ -142,7 +143,8 @@ activateListeners(html) {
   _onAdvanceHitPoints(event) {
     event.preventDefault();
     let hitPoints = 0;
-    let advancement = (this.actor.system.advancement.maxHP || 0) * 5;
+    let element = event.target;
+    let advancement = (parseFloat(element.value) ?? (this.actor.system.advancement.maxHP || 0)) * 5;
     let difference = this.actor.system.wounds.max - this.actor.system.wounds.value;
     let currentHitPoints = 0;
 
@@ -207,7 +209,8 @@ activateListeners(html) {
   _onAdvanceDodge(event) {
     event.preventDefault();
     let dodge = 0;
-    let advancement = this.actor.system.advancement.dodge || 0;
+    let element = event.target;
+    let advancement = parseFloat(element.value) ?? (this.actor.system.advancement.dodge || 0);
 
     dodge = this.actor.system.fledgling.stats.agility + advancement;
     this.actor.update({ "system.fledgling.dodge": dodge });
@@ -275,7 +278,7 @@ activateListeners(html) {
     let initiative = 0;
     // let advancement = this.actor.system.advancement.initiative || 0;
     let element = event.target;
-    let advancement = parseInt(element.value) ?? (this.actor.system.advancement.initiative || 0);
+    let advancement = parseFloat(element.value) ?? (this.actor.system.advancement.initiative || 0);
     let sigUses = this.actor.system.sigUses.value;
     let advancementDiff = advancement - (this.actor.system.advancement.initiative || 0);
 
@@ -299,7 +302,7 @@ activateListeners(html) {
     this.actor.update({ "system.giga.initiative": initiative });
     this.actor.update({ "system.giga.sigUses.max": initiative });
 
-    switch(this.actor.system.stage) {
+    switch (this.actor.system.stage) {
       case "1":
         initiative = this.actor.system.fledgling.stats.brains + advancement;
         break;
@@ -334,20 +337,20 @@ activateListeners(html) {
     let item = null;
 
     if (sigUses < 1) {
-        for (let i = 0; i < this.actor.signatureAttack.length; i++) {
-            if (this.actor.signatureAttack[i].system.selected) {
-                itemId = this.actor.signatureAttack[i]._id
-                item = this.actor.items.get(itemId);
-                item.update({ "system.selected": false });
-            };
-        }
+      for (let i = 0; i < this.actor.signatureAttack.length; i++) {
+        if (this.actor.signatureAttack[i].system.selected) {
+          itemId = this.actor.signatureAttack[i]._id
+          item = this.actor.items.get(itemId);
+          item.update({ "system.selected": false });
+        };
+      }
     } else {
       if (sigUses > sigUsesMax) {
         this.actor.update({ "system.sigUses.value": sigUsesMax });
         element.value = sigUsesMax;
       }
     }
-}
+  }
 
 
   // /** @override */
