@@ -52,6 +52,9 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
     if (this.actor.isOwner) {
       // html.find('.advance-hit-points').change(this._onAdvanceHitPoints.bind(this));
       html.find('.advance-initiative').change(this._onAdvanceInitiative.bind(this));
+      html.find('.advance-hit-points').change(this._onAdvanceHitPoints.bind(this));
+      html.find('.advance-damage').change(this._onAdvanceDamage.bind(this));
+      html.find('.advance-dodge').change(this._onAdvanceDodge.bind(this));
     }
   }
 
