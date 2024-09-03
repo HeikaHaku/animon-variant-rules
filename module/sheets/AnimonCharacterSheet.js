@@ -46,13 +46,22 @@ async _prepareVariantData(type, data) {
   return data;
 }
 
+activateListeners(html) {
+  super.activateListeners(html);
+
+  if (this.actor.isOwner) {
+    // html.find('.advance-hit-points').change(this._onAdvanceHitPoints.bind(this));
+    html.find('.advance-initiative').change(this._onAdvanceInitiative.bind(this));
+  }
+}
+
 
   _onUpdateDamage(event) {
     event.preventDefault();
     let element = event.currentTarget;
     let power = parseFloat(element.value);
     let damage = 0;
-    let advancement = this.actor.system.advancement.damage || 0;
+    let advancement = (this.actor.system.advancement.damage || 0) * 2;
 
     switch (element.dataset.stage) {
       case "1":
@@ -81,7 +90,7 @@ async _prepareVariantData(type, data) {
   _onAdvanceDamage(event) {
     event.preventDefault();
     let damage = 0;
-    let advancement = this.actor.system.advancement.damage || 0;
+    let advancement = (this.actor.system.advancement.damage || 0) * 2;
 
     damage = this.actor.system.fledgling.stats.power + advancement;
     this.actor.update({ "system.fledgling.damage": damage });
@@ -104,7 +113,7 @@ async _prepareVariantData(type, data) {
     let element = event.currentTarget;
     let heart = parseFloat(element.value);
     let hitPoints = 0;
-    let advancement = this.actor.system.advancement.maxHP || 0;
+    let advancement = (this.actor.system.advancement.maxHP || 0) * 5;
 
     switch (element.dataset.stage) {
       case "1":
@@ -133,7 +142,7 @@ async _prepareVariantData(type, data) {
   _onAdvanceHitPoints(event) {
     event.preventDefault();
     let hitPoints = 0;
-    let advancement = this.actor.system.advancement.maxHP || 0;
+    let advancement = (this.actor.system.advancement.maxHP || 0) * 5;
     let difference = this.actor.system.wounds.max - this.actor.system.wounds.value;
     let currentHitPoints = 0;
 
@@ -220,6 +229,7 @@ async _prepareVariantData(type, data) {
     event.preventDefault();
     let element = event.currentTarget;
     let initiative = parseFloat(element.value) + (this.actor.system.advancement.initiative || 0);
+    console.log(element.value, event);
 
     switch (element.dataset.stage) {
       case "1":
@@ -263,7 +273,11 @@ async _prepareVariantData(type, data) {
   _onAdvanceInitiative(event) {
     event.preventDefault();
     let initiative = 0;
-    let advancement = this.actor.system.advancement.initiative || 0;
+    // let advancement = this.actor.system.advancement.initiative || 0;
+    let element = event.target;
+    let advancement = parseInt(element.value) ?? (this.actor.system.advancement.initiative || 0);
+    let sigUses = this.actor.system.sigUses.value;
+    let advancementDiff = advancement - (this.actor.system.advancement.initiative || 0);
 
     initiative = this.actor.system.fledgling.stats.brains + advancement;
     this.actor.update({ "system.fledgling.initiative": initiative });
@@ -284,7 +298,57 @@ async _prepareVariantData(type, data) {
     initiative = this.actor.system.giga.stats.brains + advancement;
     this.actor.update({ "system.giga.initiative": initiative });
     this.actor.update({ "system.giga.sigUses.max": initiative });
+
+    switch(this.actor.system.stage) {
+      case "1":
+        initiative = this.actor.system.fledgling.stats.brains + advancement;
+        break;
+      case "2":
+        initiative = this.actor.system.basic.stats.brains + advancement;
+        break;
+      case "3":
+        initiative = this.actor.system.super.stats.brains + advancement;
+        break;
+      case "4":
+        initiative = this.actor.system.ultra.stats.brains + advancement;
+        break;
+      case "5":
+        initiative = this.actor.system.giga.stats.brains + advancement;
+        break;
+    }
+
+    this.actor.update({ "system.initiative": initiative });
+    this.actor.update({ "system.sigUses.max": initiative });
+
+    const newSigUses = Math.min(sigUses + Math.max(advancementDiff, 0), initiative);
+
+    this.actor.update({ "system.sigUses.value": newSigUses });
   }
+
+  _onUpdateSigUses(event) {
+    event.preventDefault();
+    let element = event.currentTarget;
+    let sigUses = parseFloat(element.value);
+    let sigUsesMax = this.actor.system.sigUses.max;
+    let itemId = "";
+    let item = null;
+
+    if (sigUses < 1) {
+        for (let i = 0; i < this.actor.signatureAttack.length; i++) {
+            if (this.actor.signatureAttack[i].system.selected) {
+                itemId = this.actor.signatureAttack[i]._id
+                item = this.actor.items.get(itemId);
+                item.update({ "system.selected": false });
+            };
+        }
+    } else {
+      if (sigUses > sigUsesMax) {
+        this.actor.update({ "system.sigUses.value": sigUsesMax });
+        element.value = sigUsesMax;
+      }
+    }
+}
+
 
   // /** @override */
   // _onUpdateBondLevel(event) {

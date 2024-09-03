@@ -191,7 +191,7 @@
                                     <h4 class="title">{{localize "animon.animon.sigUses"}}</h4>
                                     {{#unless (eq actor.system.stage "1")}}
                                     <input class="update-sig-uses" type="number" name="system.sigUses.value"
-                                        value="{{actor.system.sigUses.value}}">
+                                        value="{{actor.system.sigUses.value}}" max="{{actor.system.sigUses.max}}">
                                     <br>
                                     {{#if (eq actor.system.stage "2")}}
                                     {{actor.system.basic.sigUses.max}}
