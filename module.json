@@ -28,6 +28,6 @@
     }
   ],
   "url": "https://github.com/HeikaHaku/animon-variant-rules",
-  "manifest": "https://github.com/HeikaHaku/animon-variant-rules/raw/main/module.json",
+  "manifest": "https://raw.githubusercontent.com/HeikaHaku/animon-variant-rules/v1.0.2/module.json",
   "download": "https://github.com/HeikaHaku/animon-variant-rules/archive/refs/tags/v1.0.2.zip"
 }
