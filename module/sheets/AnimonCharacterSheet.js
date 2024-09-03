@@ -94,7 +94,10 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
     event.preventDefault();
     let damage = 0;
     let element = event.target;
-    let advancement = (parseFloat(element.value) ?? (this.actor.system.advancement.damage || 0)) * 2;
+    const limit = game.settings.get('animon-variant-rules', 'maxBoosts') || Infinity;
+    let value = Math.min(parseFloat(element.value), limit);
+    element.value = value;
+    let advancement = (value ?? (this.actor.system.advancement.damage || 0)) * 2;
 
     damage = this.actor.system.fledgling.stats.power + advancement;
     this.actor.update({ "system.fledgling.damage": damage });
@@ -147,7 +150,10 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
     event.preventDefault();
     let hitPoints = 0;
     let element = event.target;
-    let advancement = (parseFloat(element.value) ?? (this.actor.system.advancement.maxHP || 0)) * 5;
+    const limit = game.settings.get('animon-variant-rules', 'maxBoosts') || Infinity;
+    let value = Math.min(parseFloat(element.value), limit);
+    element.value = value;
+    let advancement = (value ?? (this.actor.system.advancement.maxHP || 0)) * 5;
     let difference = this.actor.system.wounds.max - this.actor.system.wounds.value;
     let currentHitPoints = 0;
 
@@ -213,7 +219,10 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
     event.preventDefault();
     let dodge = 0;
     let element = event.target;
-    let advancement = parseFloat(element.value) ?? (this.actor.system.advancement.dodge || 0);
+    const limit = game.settings.get('animon-variant-rules', 'maxBoosts') || Infinity;
+    let value = Math.min(parseFloat(element.value), limit);
+    element.value = value;
+    let advancement = value ?? (this.actor.system.advancement.dodge || 0);
 
     dodge = this.actor.system.fledgling.stats.agility + advancement;
     this.actor.update({ "system.fledgling.dodge": dodge });
@@ -234,7 +243,7 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
   _onUpdateInitiative(event) {
     event.preventDefault();
     let element = event.currentTarget;
-    let initiative = parseFloat(element.value) + (this.actor.system.advancement.initiative || 0);
+    let initiative = parseFloat(element.value);
     console.log(element.value, event);
 
     switch (element.dataset.stage) {
@@ -281,7 +290,10 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
     let initiative = 0;
     // let advancement = this.actor.system.advancement.initiative || 0;
     let element = event.target;
-    let advancement = parseFloat(element.value) ?? (this.actor.system.advancement.initiative || 0);
+    const limit = game.settings.get('animon-variant-rules', 'maxBoosts') || Infinity;
+    let value = Math.min(parseFloat(element.value), limit);
+    element.value = value;
+    let advancement = value ?? (this.actor.system.advancement.initiative || 0);
     let sigUses = this.actor.system.sigUses.value;
     let advancementDiff = advancement - (this.actor.system.advancement.initiative || 0);
 
@@ -356,32 +368,32 @@ export default class VariantAnimonCharacterSheet extends AnimonCharacterSheet {
   }
 
 
-  // /** @override */
-  // _onUpdateBondLevel(event) {
-  //   event.preventDefault();
-  //   const limits = {
-  //     min: 1,
-  //     max: game.settings.get('animon-variant-rules', 'maxLevel')
-  //   };
+  /** @override */
+  _onUpdateBondLevel(event) {
+    event.preventDefault();
+    const limits = {
+      min: 1,
+      max: game.settings.get('animon-variant-rules', 'maxLevel')
+    };
 
-  //   let element = event.currentTarget;
-  //   let bondLevel = parseFloat(element.value);
-  //   let changed = false;
+    let element = event.currentTarget;
+    let bondLevel = parseFloat(element.value);
+    let changed = false;
 
-  //   if (bondLevel < limits.min) {
-  //     bondLevel = limits.min;
-  //     changed = true;
-  //   }
-  //   else if (bondLevel > limits.max) {
-  //     bondLevel = limits.max;
-  //     changed = true;
-  //   }
+    if (bondLevel < limits.min) {
+      bondLevel = limits.min;
+      changed = true;
+    }
+    else if (bondLevel > limits.max) {
+      bondLevel = limits.max;
+      changed = true;
+    }
 
-  //   if (changed) {
-  //     console.log(this.actor, bondLevel);
-  //     this.actor.update({ "system.bondLevel": bondLevel });
-  //   }
+    if (changed) {
+      this.actor.update({ "system.bondLevel": bondLevel });
+      element.value = bondLevel;
+    }
 
-  //   super._onUpdateBondLevel(event);
-  // }
+    super._onUpdateBondLevel(event);
+  }
 }
